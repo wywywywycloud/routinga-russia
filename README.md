@@ -10,8 +10,9 @@ Rules are evaluated from top to bottom:
 
 1. **Proxy exceptions:** 36 domain suffixes from itdoginfo `Russia/inside` that overlap direct routes. They take priority over the Russian category.
 2. **Russian category → direct:** `geosite:category-ru` includes Russian domain zones, Yandex, VK/Mail, banks, government services, shops, and related CDNs.
-3. **Additional direct domains:** two entries from itdoginfo `Russia/outside`, plus the local hostnames listed in the file.
-4. **Everything else → proxy.**
+3. **Additional direct domains:** two entries from itdoginfo `Russia/outside`.
+4. **Local hostnames and LAN IPs → direct:** `geosite:private` and `geoip:private`, matching v2rayA's `global` preset.
+5. **Everything else → proxy.**
 
 Only exceptions that need to override direct routes are listed explicitly. Other `Russia/inside` domains already match `default: proxy`. The `.ua` exception also overrides Ukrainian domains included in the Russian category. Where the upstream inside and outside lists conflict, inside takes precedence; for example, `showip.net` uses the default proxy route.
 
@@ -20,7 +21,7 @@ Only exceptions that need to override direct routes are listed explicitly. Other
 ## Requirements and installation
 
 - v2rayA with RoutingA support and a connected proxy available as `proxy`.
-- A v2fly-compatible `geosite.dat` containing **`category-ru`**. The exceptions were calculated against the source snapshot below.
+- A v2fly-compatible `geosite.dat` containing **`category-ru`** and **`private`**, plus `geoip.dat` containing **`private`**. The exceptions were calculated against the source snapshot below.
 - For transparent traffic, enable traffic sniffing so the core can recognize domains when available.
 
 1. Export your existing rules if you want a backup.
@@ -36,7 +37,7 @@ This is a **static snapshot dated September 27, 2026**. It does not download or 
 
 The policy follows domain lists rather than testing live availability. Since `category-ru` includes entire domain zones, a newly blocked Russian domain can go direct until it is added as an exception. To override it, add `domain(domain: example.ru) -> proxy` above the category rule.
 
-There is no `geoip:ru` rule. Traffic without a recognized domain falls back to the proxy; private IP ranges also have no explicit rule in this profile. Built-in v2rayA rules added before user rules retain their priority.
+There is no `geoip:ru` rule. Traffic without a recognized domain uses the direct route if its destination matches `geoip:private`; otherwise it falls back to the proxy. With `IPOnDemand`, the private-IP rule can also match an IP resolved from a domain. Explicit proxy exceptions remain above the private rules. Built-in v2rayA rules added before user rules retain their priority.
 
 ## Sources and validation
 
@@ -45,9 +46,9 @@ There is no `geoip:ru` rule. Traffic without a recognized domain falls back to t
 | [v2fly/domain-list-community: category-ru](https://github.com/v2fly/domain-list-community/blob/bcea25493ed28c387660fe49ce1ceb242d2efca0/data/category-ru) | `bcea25493ed28c387660fe49ce1ceb242d2efca0` | 2026-09-25 |
 | [itdoginfo/allow-domains: Russia/inside](https://github.com/itdoginfo/allow-domains/blob/949e4dee2e5285156755884994b6b6c1659828b4/Russia/inside-raw.lst) and [Russia/outside](https://github.com/itdoginfo/allow-domains/blob/949e4dee2e5285156755884994b6b6c1659828b4/Russia/outside-raw.lst) | `949e4dee2e5285156755884994b6b6c1659828b4` | 2026-09-21 |
 
-The profile passed the actual **RoutingA v1.0.2** parser: 12 explicit rules and one final `default: proxy`. An independent audit passed **6,091 routing assertions**, checking the parser output against the pinned source lists, including all 1,183 inside entries, 39 outside entries, and 1,942 unique expanded category expressions. The English edition changes comments only; rule statements are identical to the audited profile.
+The profile passed the actual **RoutingA v1.0.2** parser: 12 explicit rules and one final `default: proxy`. The proxy exceptions and Russian-category rules are unchanged from the original audited profile. The local-domain and LAN-IP rules use the same expressions as v2rayA's `global` preset.
 
-These checks validate syntax and routing decisions for the source snapshot. They do not verify the geodata installed on your device or live reachability through your ISP.
+The parser check validates configuration syntax. It does not verify the geodata installed on your device, live LAN routing, or reachability through your ISP.
 
 ## License and attribution
 
