@@ -8,7 +8,7 @@ A concise RoutingA profile for v2rayA: send the Russian domain category directly
 
 Rules are evaluated from top to bottom:
 
-1. **Proxy exceptions:** 36 domain suffixes from itdoginfo `Russia/inside` that overlap direct routes. They take priority over the Russian category.
+1. **Proxy exceptions:** domain suffixes from itdoginfo `Russia/inside` that overlap direct routes. They take priority over the Russian category.
 2. **Russian category → direct:** `geosite:category-ru` includes Russian domain zones, Yandex, VK/Mail, banks, government services, shops, and related CDNs.
 3. **Additional direct domains:** two entries from itdoginfo `Russia/outside`.
 4. **Local hostnames and LAN IPs → direct:** `geosite:private` and `geoip:private`, matching v2rayA's `global` preset.
